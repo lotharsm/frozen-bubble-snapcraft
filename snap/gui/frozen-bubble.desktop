@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Frozen Bubble
+Name[en]=Name=Frozen Bubble
+GenericName=Arcade Game
+GenericName[en]=Arcade Game
+Comment=Pop out the bubbles!
+Comment[en]=Pop out the bubbles!
+Icon=${SNAP}/meta/gui/frozen-bubble.png
+Exec=frozen-bubble
+Terminal=false
+StartupNotify=false
+Categories=Game;ArcadeGame;
+Keywords=game;bubbles;pop;arcade

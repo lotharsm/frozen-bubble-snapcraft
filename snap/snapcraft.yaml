@@ -1,0 +1,107 @@
+name: frozen-bubble
+base: core18
+license: GPL-2.0
+adopt-info: frozen-bubble
+summary: Frozen Bubble - a cool game where you pop out the bubbles!
+description: |
+    Frozen-Bubble is a clone of the popular "Puzzle Bobble" game,
+    in which you attempt to shoot bubbles into groups of the same color to cause them to pop.
+
+    Players compete as penguins and must use the arrow keys to aim a colored bubble at groups of bubbles.
+    The objective is to clear all the bubbles off the screen before a bubble passes below a line at the bottom.
+
+    It features 100 single-player levels, a two-player mode, music and striking graphics.
+    A level editor is also included to allow players to create and play their own levels. 
+confinement: strict
+grade: stable
+
+apps:
+  frozen-bubble:
+    command: $SNAP/usr/bin/perl $SNAP/usr/local/bin/frozen-bubble
+    environment:
+      LC_ALL: "C.UTF-8"
+      PERL5LIB:  "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/perl-base/:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/perl5/5.26/:$SNAP/usr/share/perl5/:$SNAP/usr/share/perl/5.26.1/:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/perl/5.26/:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/perl/5.26.1/:$SNAP/usr/local/lib/$SNAPCRAFT_ARCH_TRIPLET/perl/5.26.1/"
+      LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio/:$LD_LIBRARY_PATH"
+      HOME: "$SNAP_USER_COMMON"
+    plugs:
+      - x11
+      - network
+      - network-bind
+      - wayland
+      - unity7
+      - opengl
+      - joystick
+      - audio-playback
+      - home
+
+parts:
+  frozen-bubble:
+    plugin: nil
+    source: https://github.com/kthakore/frozen-bubble.git
+    override-build: |
+      git fetch
+      git checkout master
+      snapcraftctl set-version $(git -C ../src describe | sed 's/desc\///')   
+      snapcraftctl build
+
+      sed -i -e 's/qw(-g -Wall -Werror -pipe)/qw(-Wall)/g' inc/My/Builder.pm
+
+      yes | cpan install Module::Build
+      yes | cpan install Alien::SDL
+      yes | cpan install IPC::System::Simple
+      yes | cpan install Locale::Maketext::Extract
+      yes | cpan install Alien::SDL
+
+      perl Build.PL
+      ./Build
+      ./Build test
+      ./Build install
+      
+    build-packages:
+      - build-essential
+      - perl
+      - perl-base
+      - perl-modules-5.26
+      - libfile-slurp-perl
+      - libperl-dev
+      - libpango1.0-dev
+      - libsdl-pango-dev
+      - libpng-dev
+      - libcompress-bzip2-perl
+      - liblocale-gettext-perl
+      - libsdl-mixer1.2-dev
+      - libsdl-perl
+      - libsdl1.2debian
+      - libunity-dev
+      - libvorbis-dev
+      - x11proto-xext-dev
+      - libxft-dev
+    stage-packages:
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+      - libglu1-mesa
+      - libwayland-egl1-mesa
+      - libpng16-16
+      - freeglut3
+      - perl
+      - perl-base
+      - perl-modules-5.26
+      - libfile-slurp-perl
+      - libcompress-bzip2-perl
+      - liblocale-gettext-perl
+      - libglib2.0-0
+      - libpango-1.0-0
+      - libsdl-mixer1.2
+      - libsdl-perl
+      - libsdl-pango1
+      - libsdl1.2debian
+      - libslang2
+      - libstdc++6
+      - libunity9
+
+    organize:
+      /usr/local/bin: usr/local/bin
+      /usr/local/lib: usr/local/lib
+      /usr/local/share/perl/5.26.1: usr/local/share/perl/5.26.1
+      /usr/share/perl5: usr/share/perl5
+      /usr/share/fonts: usr/share/fonts
